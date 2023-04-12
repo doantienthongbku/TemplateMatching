@@ -1,0 +1,8 @@
+matplotlib==3.5.2
+numpy==1.21.6
+opencv_python==4.5.5.64
+Pillow==9.2.0
+scikit_learn==1.0.2
+scipy==1.7.3
+seaborn==0.11.2
+sewar==0.4.5
