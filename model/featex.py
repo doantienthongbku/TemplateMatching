@@ -78,19 +78,30 @@ class FeatureExtractor():
         l_star = max(l - k, 2)
         return l_star
     
+    # def calc_NCC(self, F, M):
+    #     c, h_f, w_f = F.shape[-3:]
+    #     NCC = np.zeros((M.shape[-2] - h_f, M.shape[-1] - w_f))
+    #     F_tilde = F.reshape(1, -1)
+        
+    #     for i in range(M.shape[-2] - h_f):
+    #         for j in range(M.shape[-1] - w_f):
+    #             # self.pca.fit(M[:, :, i:i + h_f, j:j + w_f].reshape(c, -1))
+    #             M_tilde = self.pca.singular_values_.reshape(1, -1)
+    #             M_tilde = M[:, :, i:i + h_f, j:j + w_f].reshape(1, -1)
+                
+    #             NCC[i, j] = np.sum(cosine_distances(F_tilde, M_tilde))
+
+    #     return NCC
+    
     def calc_NCC(self, F, M):
         c, h_f, w_f = F.shape[-3:]
-        NCC = np.zeros((M.shape[-2] - h_f, M.shape[-1] - w_f))
-        F_tilde = F.reshape(1, -1)
-        
+        tmp = np.zeros((c, M.shape[-2] - h_f, M.shape[-1] - w_f, h_f, w_f))
         for i in range(M.shape[-2] - h_f):
             for j in range(M.shape[-1] - w_f):
-                # self.pca.fit(M[:, :, i:i + h_f, j:j + w_f].reshape(c, -1))
-                # M_tilde = self.pca.singular_values_.reshape(1, -1)
-                M_tilde = M[:, :, i:i + h_f, j:j + w_f].reshape(1, -1)
-                
-                NCC[i, j] = np.sum(cosine_distances(F_tilde, M_tilde))
-
+                M_tilde = M[:, :, i:i+h_f, j:j+w_f][:, None, None, :, :]
+                tmp[:, i, j, :, :] = M_tilde / np.linalg.norm(M_tilde)
+        NCC = np.sum(tmp*F.reshape(F.shape[-3], 1, 1, F.shape[-2], F.shape[-1]), axis=(0, 3, 4))
+        
         return NCC
 
     def __call__(self, template, image, threshold=None):
@@ -179,9 +190,9 @@ class FeatureExtractor():
         self.NCC = self.calc_NCC(
             self.template_feature_map.numpy(), self.image_feature_map.numpy())
 
-        if threshold is None:
-            threshold = 1.01 * np.min(self.NCC)
-        max_indices = np.array(np.where(self.NCC < threshold)).T
+        # if threshold is None:
+        #     threshold = 0.95 * np.max(self.NCC)
+        max_indices = np.array(np.where(self.NCC == np.max(self.NCC))).T
 
         boxes = []
         centers = []

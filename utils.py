@@ -100,9 +100,7 @@ def all_sample_iou(score_list, gt_list):
     iou_list = []
     for idx in range(num_samples):
         score, image_gt = score_list[idx], gt_list[idx]
-        w, h = image_gt[2:]
-        pred_rect = locate_bbox( score, w, h )
-        iou = IoU( image_gt, pred_rect )
+        iou = IoU( image_gt, score )
         iou_list.append( iou )
     return iou_list
 
@@ -117,7 +115,7 @@ def plot_success_curve( iou_score, title='' ):
     plt.ylim(0, 1)
     plt.title(title + 'auc={}'.format(auc_))
     plt.plot( thres, success_rate )
-    plt.show()
+    plt.savefig(title + '.png')
     
 
 if __name__ == '__main__':

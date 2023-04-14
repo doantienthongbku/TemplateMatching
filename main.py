@@ -60,7 +60,6 @@ if len(boxes) < 1 or len(scores) < 1:
     exit()
 
 nms_res = nms(np.array(boxes), np.array(scores), thresh=0.7)
-print("nms_res:", nms_res)
 d_img = plot_box(d_img, boxes, nms_res)
 
 if cv2.imwrite("result.jpg", d_img[..., ::-1]):
