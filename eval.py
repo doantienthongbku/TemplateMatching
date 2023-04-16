@@ -22,7 +22,7 @@ image_transform = transforms.Compose([
 ])
     
 # load data
-file_dir = '../datasets/BBSdata'
+file_dir = 'datasets/BBSdata'
 
 gt = sorted([ os.path.join(file_dir, i) for i in os.listdir(file_dir)  if '.txt' in i ])
 img_path = sorted([ os.path.join(file_dir, i) for i in os.listdir(file_dir) if '.jpg' in i ] )
@@ -52,10 +52,10 @@ def model_eval(FE):
         template_ = image_transform(template.copy()).unsqueeze(0)
         image_ = image_transform(image.copy()).unsqueeze(0)
         
-        sub_fol = os.path.join("result", image_name.split('.')[0])
-        os.mkdir(sub_fol)
-        cv2.imwrite(os.path.join(sub_fol, "template.jpg"), template[..., ::-1])
-        cv2.imwrite(os.path.join(sub_fol, "image.jpg"), image[..., ::-1])
+        # sub_fol = os.path.join("result", image_name.split('.')[0])
+        # os.mkdir(sub_fol)
+        # cv2.imwrite(os.path.join(sub_fol, "template.jpg"), template[..., ::-1])
+        # cv2.imwrite(os.path.join(sub_fol, "image.jpg"), image[..., ::-1])
         
         boxes, _, scores = FE(template_, image_, threshold=None)
         if len(boxes) == 0:
@@ -83,4 +83,4 @@ FE = FeatureExtractor(model_feature, use_cuda=False, padding=True)
 
 score_list, gt_list = model_eval(FE)
 iou_score = all_sample_iou( score_list, gt_list )
-plot_success_curve( iou_score, title='he ')
+plot_success_curve( iou_score, title='he2 ')
